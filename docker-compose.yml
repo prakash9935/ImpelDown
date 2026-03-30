@@ -1,0 +1,87 @@
+services:
+  # Qdrant Vector Database
+  qdrant:
+    image: qdrant/qdrant:latest
+    container_name: secrag-qdrant
+    ports:
+      - "6333:6333"
+    volumes:
+      - qdrant_storage:/qdrant/storage
+    environment:
+      QDRANT_API_KEY: ${QDRANT_API_KEY:-}
+    networks:
+      - secrag-network
+
+  # Redis for Caching & Rate Limiting
+  redis:
+    image: redis:7-alpine
+    container_name: secrag-redis
+    ports:
+      - "6379:6379"
+    # SECURITY H-03: No default password - must be set via env var
+    command: redis-server --appendonly yes --requirepass securepass123
+    volumes:
+      - redis_storage:/data
+    networks:
+      - secrag-network
+
+  # SecRAG FastAPI Application
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: secrag-app
+    ports:
+      - "8000:8000"
+    depends_on:
+      - qdrant
+      - redis
+    env_file: ./.env.docker
+    environment:
+      # Override specific values (rest loaded from env_file)
+      QDRANT_URL: http://qdrant:6333
+      REDIS_URL: redis://default:securepass123@redis:6379/0
+      # Force CPU-based rendering for PDF processing (no GPU required)
+      QT_QPA_PLATFORM: offscreen
+      LIBGL_ALWAYS_INDIRECT: 1
+    volumes:
+      - ./src:/app/src
+      - ./tests:/app/tests
+      - ./config:/app/config
+      - ./.env.docker:/app/.env:ro
+    command: >
+      sh -c "
+        python -m pip install -e . &&
+        uvicorn src.secrag.main:app --host 0.0.0.0 --port 8000 --reload
+      "
+    networks:
+      - secrag-network
+
+  # SecRAG Frontend
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_SUPABASE_URL: https://mztltddpmsrwzulwahcp.supabase.co
+        NEXT_PUBLIC_SUPABASE_ANON_KEY: ${SUPABASE_ANON_KEY:-}
+        NEXT_PUBLIC_API_URL: http://localhost:8000
+    container_name: secrag-frontend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - app
+    networks:
+      - secrag-network
+
+volumes:
+  qdrant_storage:
+    driver: local
+  redis_storage:
+    driver: local
+  keycloak_storage:
+    driver: local
+
+networks:
+  secrag-network:
+    driver: bridge

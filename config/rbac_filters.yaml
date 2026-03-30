@@ -1,0 +1,56 @@
+# RBAC Role → Qdrant Multi-Dimensional Filter Mapping
+# Used in Epic 2: RBAC-Enforced Retrieval (US-205, Sprint 3)
+#
+# Multi-dimensional filters use Qdrant `must` (AND) composition to enforce:
+#   1. Department/visibility authorization
+#   2. Quarantine enforcement (unsafe chunks flagged as untrusted)
+#   3. Trust score thresholds per role
+#
+# Critical: Filters are injected BEFORE vector search (pre-retrieval),
+# not after, to prevent unauthorized data leakage.
+
+# Admin: sees all documents (including quarantined for review)
+admin:
+  description: "C-Suite / Administrator - full access"
+  filter: {}
+
+# Finance: sees Finance + Corp + Public, excludes quarantined, requires trust_score >= 1.0
+finance:
+  description: "Finance Team - Finance, Corp, and Public docs (trusted)"
+  filter:
+    must:
+      - dept:
+          any:
+            - eq: "finance"
+            - eq: "corp"
+            - eq: "public"
+      - quarantine:
+          eq: false
+      - trust_score:
+          gte: 1.0
+
+# HR: sees HR + Public, excludes quarantined, requires trust_score >= 1.0
+hr:
+  description: "HR Team - HR and Public docs (trusted)"
+  filter:
+    must:
+      - dept:
+          any:
+            - eq: "hr"
+            - eq: "public"
+      - quarantine:
+          eq: false
+      - trust_score:
+          gte: 1.0
+
+# Standard: sees only Public, excludes quarantined, requires higher trust_score >= 1.5
+standard:
+  description: "Standard User - Public docs only (highly trusted)"
+  filter:
+    must:
+      - visibility:
+          eq: "public"
+      - quarantine:
+          eq: false
+      - trust_score:
+          gte: 1.5

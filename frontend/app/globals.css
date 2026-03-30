@@ -1,0 +1,401 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+/* ---------------------------------------------------------------------------
+   LIQUID GLASS DESIGN SYSTEM
+   Inspired by Apple's Liquid Glass (WWDC 2025, iOS 26 / macOS Tahoe)
+
+   Design tokens use oklch for perceptual uniformity.
+   The palette is deliberately muted and desaturated — no bright saturated
+   colors. Accent tones glow softly rather than shout.
+
+   Hierarchy:
+     Primitive  ->  Semantic  ->  Component
+     (raw oklch)    (--background, --card...)   (--glass-*, --glow-*)
+   --------------------------------------------------------------------------- */
+
+@theme inline {
+  /* --- Font stack --------------------------------------------------------- */
+  --font-sans: var(--font-geist-sans), "SF Pro Display", "SF Pro Text", system-ui, -apple-system, sans-serif;
+  --font-mono: var(--font-geist-mono), "SF Mono", ui-monospace, monospace;
+  --font-heading: var(--font-sans);
+
+  /* --- Semantic color mapping (Tailwind <-> CSS vars) --------------------- */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  /* --- Chart palette (muted, desaturated) --------------------------------- */
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+
+  /* --- Sidebar ------------------------------------------------------------ */
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+
+  /* --- Liquid Glass radius scale (extra-rounded) -------------------------- */
+  --radius-sm: calc(var(--radius) * 0.75);
+  --radius-md: var(--radius);
+  --radius-lg: calc(var(--radius) * 1.5);
+  --radius-xl: calc(var(--radius) * 2);
+  --radius-2xl: calc(var(--radius) * 2.5);
+  --radius-3xl: calc(var(--radius) * 3);
+  --radius-4xl: calc(var(--radius) * 4);
+}
+
+/* ===========================================================================
+   LIGHT THEME (reference only — app ships dark-first)
+   =========================================================================== */
+:root {
+  --background: oklch(0.985 0 0);
+  --foreground: oklch(0.145 0 0);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  --primary: oklch(0.205 0 0);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.97 0 0);
+  --secondary-foreground: oklch(0.205 0 0);
+  --muted: oklch(0.97 0 0);
+  --muted-foreground: oklch(0.556 0 0);
+  --accent: oklch(0.97 0 0);
+  --accent-foreground: oklch(0.205 0 0);
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: oklch(0.922 0 0);
+  --input: oklch(0.922 0 0);
+  --ring: oklch(0.708 0 0);
+  --chart-1: oklch(0.87 0 0);
+  --chart-2: oklch(0.556 0 0);
+  --chart-3: oklch(0.439 0 0);
+  --chart-4: oklch(0.371 0 0);
+  --chart-5: oklch(0.269 0 0);
+  --radius: 0.75rem;
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar-primary: oklch(0.205 0 0);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.97 0 0);
+  --sidebar-accent-foreground: oklch(0.205 0 0);
+  --sidebar-border: oklch(0.922 0 0);
+  --sidebar-ring: oklch(0.708 0 0);
+}
+
+/* ===========================================================================
+   DARK THEME — LIQUID GLASS
+   Deep inky background with a cool-violet undertone (hue 285).
+   All surfaces are translucent panels; depth comes from layered blur.
+   =========================================================================== */
+.dark {
+  /* --- Background & foreground ------------------------------------------- */
+  --background: oklch(0.11 0.008 285);        /* Deep dark with cool-violet cast */
+  --foreground: oklch(0.93 0.005 285);         /* Soft white, not pure white */
+
+  /* --- Glass surfaces ---------------------------------------------------- */
+  --card: oklch(1 0 0 / 5%);                   /* 5% white — translucent panel */
+  --card-foreground: oklch(0.93 0.005 285);
+  --popover: oklch(0.16 0.01 285);             /* Slightly more opaque for popovers */
+  --popover-foreground: oklch(0.93 0.005 285);
+
+  /* --- Primary accent: soft cyan/teal glow ------------------------------- */
+  --primary: oklch(0.72 0.12 192);             /* Desaturated teal — soft, not neon */
+  --primary-foreground: oklch(0.11 0.008 285);
+
+  /* --- Secondary: frosted white surface ---------------------------------- */
+  --secondary: oklch(1 0 0 / 8%);              /* 8% white glass */
+  --secondary-foreground: oklch(0.88 0.005 285);
+
+  /* --- Muted: dimmer glass for receded surfaces -------------------------- */
+  --muted: oklch(1 0 0 / 6%);
+  --muted-foreground: oklch(0.60 0.005 285);   /* Low-contrast text for metadata */
+
+  /* --- Accent: matches primary for interactive highlights ----------------- */
+  --accent: oklch(0.72 0.12 192);
+  --accent-foreground: oklch(0.11 0.008 285);
+
+  /* --- Destructive: muted warm red --------------------------------------- */
+  --destructive: oklch(0.62 0.18 25);
+
+  /* --- Borders & inputs: thin white at low opacity ----------------------- */
+  --border: oklch(1 0 0 / 8%);                 /* Signature Liquid Glass border */
+  --input: oklch(1 0 0 / 8%);
+  --ring: oklch(0.72 0.12 192 / 50%);          /* Soft glow ring on focus */
+
+  /* --- Charts: muted, desaturated palette -------------------------------- */
+  --chart-1: oklch(0.72 0.12 192);             /* Teal (primary) */
+  --chart-2: oklch(0.62 0.10 260);             /* Muted indigo */
+  --chart-3: oklch(0.68 0.10 55);              /* Warm sand */
+  --chart-4: oklch(0.58 0.12 310);             /* Soft mauve */
+  --chart-5: oklch(0.55 0.08 170);             /* Dusty sage */
+
+  /* --- Sidebar: glass panel with subtle tint ----------------------------- */
+  --sidebar: oklch(1 0 0 / 3%);                /* Near-invisible glass */
+  --sidebar-foreground: oklch(0.88 0.005 285);
+  --sidebar-primary: oklch(0.72 0.12 192);
+  --sidebar-primary-foreground: oklch(0.11 0.008 285);
+  --sidebar-accent: oklch(1 0 0 / 8%);
+  --sidebar-accent-foreground: oklch(0.88 0.005 285);
+  --sidebar-border: oklch(1 0 0 / 6%);
+  --sidebar-ring: oklch(0.72 0.12 192 / 50%);
+
+  /* --- Liquid Glass component tokens ------------------------------------- */
+  --glass-bg: oklch(1 0 0 / 4%);               /* Default glass fill */
+  --glass-bg-hover: oklch(1 0 0 / 7%);         /* Glass fill on hover */
+  --glass-bg-active: oklch(1 0 0 / 10%);       /* Glass fill on active/pressed */
+  --glass-bg-elevated: oklch(1 0 0 / 6%);      /* Raised glass panel */
+  --glass-border: oklch(1 0 0 / 10%);          /* Thin white edge */
+  --glass-border-strong: oklch(1 0 0 / 15%);   /* Stronger edge for emphasis */
+  --glass-shadow: 0 8px 32px oklch(0 0 0 / 30%), 0 2px 8px oklch(0 0 0 / 20%);
+  --glass-shadow-sm: 0 4px 16px oklch(0 0 0 / 20%);
+  --glass-shadow-lg: 0 16px 48px oklch(0 0 0 / 40%), 0 4px 16px oklch(0 0 0 / 25%);
+
+  /* --- Glow tokens (soft accent lighting) -------------------------------- */
+  --glow-primary: oklch(0.72 0.12 192 / 15%);  /* Soft teal glow behind elements */
+  --glow-primary-strong: oklch(0.72 0.12 192 / 25%);
+  --glow-user: oklch(0.65 0.10 260 / 15%);     /* Soft indigo for user bubbles */
+
+  /* --- Refraction effect (top-edge light highlight) ---------------------- */
+  --refraction-top: linear-gradient(
+    180deg,
+    oklch(1 0 0 / 12%) 0%,
+    oklch(1 0 0 / 3%) 30%,
+    transparent 100%
+  );
+  --refraction-edge: linear-gradient(
+    180deg,
+    oklch(1 0 0 / 8%) 0%,
+    transparent 50%
+  );
+
+  /* --- Noise / grain texture overlay ------------------------------------- */
+  --noise-opacity: 0.03;
+
+  /* --- Spacing scale (4px base) ------------------------------------------ */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+}
+
+/* ===========================================================================
+   BASE LAYER
+   =========================================================================== */
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  html {
+    @apply font-sans;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+
+  /* --- Subtle background noise texture ----------------------------------- */
+  .dark body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    opacity: var(--noise-opacity);
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-repeat: repeat;
+    background-size: 256px 256px;
+  }
+
+  /* Ensure all page content sits above the noise layer */
+  .dark body > * {
+    position: relative;
+    z-index: 1;
+  }
+
+  /* --- Reduced motion ---------------------------------------------------- */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+/* ===========================================================================
+   LIQUID GLASS UTILITY CLASSES
+   Use these directly or compose into components.
+   =========================================================================== */
+@layer utilities {
+  /* --- Glass surfaces ---------------------------------------------------- */
+  .glass {
+    background: var(--glass-bg);
+    backdrop-filter: blur(24px) saturate(1.3);
+    -webkit-backdrop-filter: blur(24px) saturate(1.3);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--glass-shadow-sm);
+  }
+
+  .glass-elevated {
+    background: var(--glass-bg-elevated);
+    backdrop-filter: blur(40px) saturate(1.4);
+    -webkit-backdrop-filter: blur(40px) saturate(1.4);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--glass-shadow);
+  }
+
+  .glass-strong {
+    background: oklch(1 0 0 / 8%);
+    backdrop-filter: blur(48px) saturate(1.5);
+    -webkit-backdrop-filter: blur(48px) saturate(1.5);
+    border: 1px solid var(--glass-border-strong);
+    box-shadow: var(--glass-shadow);
+  }
+
+  /* --- Refraction highlight (apply to pseudo-element or overlay) ---------- */
+  .glass-refraction {
+    position: relative;
+    overflow: hidden;
+  }
+  .glass-refraction::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: var(--refraction-top);
+    pointer-events: none;
+    border-radius: inherit;
+    z-index: 1;
+  }
+
+  /* --- Inner shadow for depth (Liquid Glass signature) -------------------- */
+  .glass-inner-shadow {
+    box-shadow:
+      var(--glass-shadow-sm),
+      inset 0 1px 1px oklch(1 0 0 / 6%),
+      inset 0 -1px 2px oklch(0 0 0 / 10%);
+  }
+
+  /* --- Glow effects ------------------------------------------------------ */
+  .glow-primary {
+    box-shadow: 0 0 24px var(--glow-primary), 0 0 48px oklch(0.72 0.12 192 / 8%);
+  }
+
+  .glow-primary-ring {
+    box-shadow: 0 0 0 1px var(--glass-border), 0 0 16px var(--glow-primary);
+  }
+
+  /* --- Glass hover transition -------------------------------------------- */
+  .glass-interactive {
+    transition: background 150ms ease-out, box-shadow 150ms ease-out, border-color 150ms ease-out;
+  }
+  .glass-interactive:hover {
+    background: var(--glass-bg-hover);
+    border-color: var(--glass-border-strong);
+  }
+  .glass-interactive:active {
+    background: var(--glass-bg-active);
+  }
+}
+
+/* ===========================================================================
+   ANIMATION KEYFRAMES
+   All durations stay under 300ms for interactive feedback.
+   =========================================================================== */
+@keyframes glass-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px) scale(0.98);
+    backdrop-filter: blur(0px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    backdrop-filter: blur(24px);
+  }
+}
+
+@keyframes glass-shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes soft-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+@layer utilities {
+  .animate-glass-in {
+    animation: glass-fade-in 250ms ease-out both;
+  }
+
+  .animate-glass-shimmer {
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      oklch(1 0 0 / 5%) 50%,
+      transparent 100%
+    );
+    background-size: 200% 100%;
+    animation: glass-shimmer 2s ease-in-out infinite;
+  }
+
+  .animate-soft-pulse {
+    animation: soft-pulse 2s ease-in-out infinite;
+  }
+}
+
+/* ===========================================================================
+   SCROLLBAR STYLING (matches glass aesthetic)
+   =========================================================================== */
+@layer base {
+  .dark ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  .dark ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .dark ::-webkit-scrollbar-thumb {
+    background: oklch(1 0 0 / 10%);
+    border-radius: 9999px;
+  }
+  .dark ::-webkit-scrollbar-thumb:hover {
+    background: oklch(1 0 0 / 18%);
+  }
+}
